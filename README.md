@@ -1,15 +1,24 @@
-# 🚚 Migração de repositórios GitHub
+# 🚚 Ferramentas para repositórios GitHub
 
-Este script automatiza a cópia de vários repositórios GitHub de uma conta de
-origem para uma conta de destino, preservando o histórico de branches e tags e
-atualizando os dados de autor e committer de todos os commits.
+Este projeto reúne scripts para clonar repositórios, migrá-los entre contas e
+alterar a visibilidade de repositórios GitHub.
+
+## 📁 Arquivos
+
+| Arquivo | Finalidade |
+| --- | --- |
+| [`clone_repos.py`](./clone_repos.py) | Clona vários repositórios públicos de um usuário ou organização. |
+| [`clone_repos_replace_commits.py`](./clone_repos_replace_commits.py) | Migra repositórios para outra conta, reescrevendo autor e committer dos commits. |
+| [`repos_visibility.py`](./repos_visibility.py) | Torna privados os repositórios públicos da conta autenticada. |
 
 > ⚠️ **Atenção:** o processo reescreve o histórico Git e usa `push --force`.
+> Essa observação se aplica ao [`clone_repos_replace_commits.py`](./clone_repos_replace_commits.py).
 > Utilize-o somente quando tiver certeza de que essa é a operação desejada.
 
-## ✨ O que o script faz
+## ✨ Migração com reescrita de commits
 
-Para cada repositório informado na lista `repos`, o script:
+O [`clone_repos_replace_commits.py`](./clone_repos_replace_commits.py) executa,
+para cada repositório informado na lista `repos`:
 
 1. 📥 Faz um clone bare do repositório de origem.
 2. 🧾 Altera o nome e o e-mail do autor e do committer em todos os commits.
@@ -37,9 +46,10 @@ migração terminar, você pode renomear o repositório no GitHub, se desejar.
 > 💡 Crie o repositório de destino sem iniciar com README, `.gitignore` ou
 > licença, evitando conflitos com o histórico que será enviado.
 
-## ⚙️ Configuração
+## ⚙️ Configuração da migração
 
-Abra [`clone_repos.py`](./clone_repos.py) e ajuste os valores abaixo:
+Abra [`clone_repos_replace_commits.py`](./clone_repos_replace_commits.py) e
+ajuste os valores abaixo:
 
 ```python
 repos = [
@@ -71,12 +81,12 @@ forem diferentes, ajuste o script antes de executar.
 2. Crie na conta de destino um repositório vazio para cada item de `repos`,
    usando exatamente o mesmo nome.
 3. Configure a origem, o nome, o e-mail e a lista de repositórios em
-   [`script.py`](./script.py).
+   [`clone_repos_replace_commits.py`](./clone_repos_replace_commits.py).
 4. Abra o Git Bash na pasta do projeto.
 5. Execute:
 
 ```bash
-python script.py
+python clone_repos_replace_commits.py
 ```
 
 Durante o processo, o Git poderá solicitar autenticação para enviar os dados
@@ -96,6 +106,39 @@ ou senhas diretamente no código.
 - 🧪 Teste primeiro com um repositório não crítico.
 - 🔒 Confira cuidadosamente o e-mail informado antes de reescrever o histórico.
 - ⏱️ Repositórios grandes podem levar bastante tempo para serem processados.
+
+## 📥 Clonagem simples
+
+Para apenas clonar repositórios públicos, configure `repos` e `user` em
+[`clone_repos.py`](./clone_repos.py) e execute:
+
+```bash
+python clone_repos.py
+```
+
+O script cria uma pasta local com o nome de cada repositório.
+
+## 🔒 Alteração de visibilidade
+
+O [`repos_visibility.py`](./repos_visibility.py) lista os repositórios da conta
+autenticada e torna privados os que ainda estão públicos. Antes de executá-lo:
+
+1. Instale a dependência:
+
+   ```bash
+   pip install PyGithub
+   ```
+
+2. Substitua o valor de `token` por um Personal Access Token com as permissões
+   necessárias.
+3. Nunca versione nem compartilhe o token. Prefira carregá-lo de uma variável
+   de ambiente em vez de mantê-lo diretamente no código.
+
+Execute com:
+
+```bash
+python repos_visibility.py
+```
 
 ## 🧯 Solução rápida de problemas
 
